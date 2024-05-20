@@ -41,14 +41,12 @@ type
     Image11: TImage;
     Label5: TLabel;
     BindSourceDB2: TBindSourceDB;
-    LinkGridToDataSourceBindSourceDB2: TLinkGridToDataSource;
     Image1: TImage;
     Label1: TLabel;
     Image2: TImage;
     Label2: TLabel;
     Layout2: TLayout;
     Layout3: TLayout;
-    FDTable2: TFDTable;
     FDQuery2: TFDQuery;
     Result_CB: TComboBox;
     Grid3: TGrid;
@@ -77,6 +75,16 @@ type
     Label12: TLabel;
     Add_Kurs_Result: TMemo;
     Button6: TButton;
+    FDQuery3: TFDQuery;
+    BindSourceDB5: TBindSourceDB;
+    LinkGridToDataSourceBindSourceDB5: TLinkGridToDataSource;
+    TabItem2: TTabItem;
+    Grid2: TGrid;
+    Layout4: TLayout;
+    FDQuery4: TFDQuery;
+    BindSourceDB6: TBindSourceDB;
+    LinkGridToDataSourceBindSourceDB6: TLinkGridToDataSource;
+    Button7: TButton;
     Function CreateLocalBD(Local_BD:string;clear:boolean):boolean;
     Function poo(s:string):string;
     function Refresh(Local_BD:string):boolean;
@@ -90,6 +98,8 @@ type
     function Add_New_Students(kl:integer):boolean;
     Function RefreshCB(CB:TComboBox;Local_BD,Field:string):boolean;
     function Add_New(local_Bd,s1:string; kl:integer;Memo:Tmemo):boolean;
+    Function Add_New_Students2():boolean;
+
     procedure Clear_forms;
     function Refresh_Table(Table:string):boolean;
     procedure Button1Click(Sender: TObject);
@@ -116,6 +126,8 @@ type
     procedure Button6Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure StudClick(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -135,6 +147,9 @@ implementation
 
 
 procedure TForm1.Button1Click(Sender: TObject);
+var
+s1,s2,local_Bd,id:string;
+i,int,y:integer;
 begin
  // Создаем БД
    CreateLocalBD('Students',true);
@@ -148,7 +163,12 @@ begin
    Add_New('Result','Result',4,Add_Kurs_Result);
    RefreshCB(Result_CB,'Result','Result');
 
+   Add_New_Students2;
+
    Refresh_Table('All');
+   FdConnection1.ExecSQL('update Result set Result_int=id-1');
+
+
 
 
 end;
@@ -172,8 +192,68 @@ end;
 
 procedure TForm1.Button6Click(Sender: TObject);
 begin
- Add_New('Result','Result',4,Add_Kurs_Result);
+ Add_New('Result','Result',6,Add_Kurs_Result);
  RefreshCB(Result_CB,'Result','Result');
+ FdConnection1.ExecSQL('update Result set Result_int=id-1');
+
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+begin
+//Заполняем результат
+     FDQuery1.SQL.Clear;
+     FDQuery1.Active:=false;
+     FDQuery1.SQL.Add('select * from Stud_Result where Result_id=1');
+     FDQuery1.Active:=true;
+     FDQuery1.First;
+
+     While not(FDQuery1.Eof) do
+      Begin
+       FDQuery1.Edit;
+       FDQuery1.FieldByName('Result_id').Text:=IntToStr(2+Random(4));
+       FDQuery1.Next;
+      End;
+    // FDQuery1.CommitUpdates;
+
+
+FDQuery4.SQL.Clear;
+FDQuery4.Active:=false;
+FDQuery4.SQL.Add('');
+FDQuery4.SQL.Add(' select kk.special,sp.tt as ">35", sn.tt as"25-35", sg.tt as ">25 " FROM Kurs kk ');
+FDQuery4.SQL.Add(' left join ');
+FDQuery4.SQL.Add('(select special,">35" as d, count(t)as tt from (select k.special, year,count(year) as t ');
+FDQuery4.SQL.Add(' From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING year>35)  group by special,d) sp on  kk.special=sp.special ');
+FDQuery4.SQL.Add(' left join  ');
+FDQuery4.SQL.Add(' (select special,"25-35"as d,  count(t)as tt from (select k.special, year,count(year) as t From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and  ');
+FDQuery4.SQL.Add('  s.id=sr.stud_id group  by special,year HAVING year<=35 and 25<=year ) group by  special,d )sn on  kk.special=sn.special  ');
+FDQuery4.SQL.Add('left join  ');
+FDQuery4.SQL.Add(' (select special,">25 "as d, count(t)as tt from (select k.special, year,count(year) as t  From Stud_result sr, Kurs k, Students s ');
+FDQuery4.SQL.Add('  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING 25>year) group by  special,d)sg on  kk.special=sg.special ');
+FDQuery4.Active:=true;
+
+Grid_Width(Grid2);
+
+
+end;
+
+procedure TForm1.Button8Click(Sender: TObject);
+begin
+FDQuery4.SQL.Clear;
+FDQuery4.Active:=false;
+FDQuery4.SQL.Add('');
+FDQuery4.SQL.Add(' select kk.special,sp.tt as ">35", sn.tt as"25-35", sg.tt as ">25 " FROM Kurs kk ');
+FDQuery4.SQL.Add(' left join ');
+FDQuery4.SQL.Add('(select special,">35" as d, count(t)as tt from (select k.special, year,count(year) as t ');
+FDQuery4.SQL.Add(' From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING year>35)  group by special,d) sp on  kk.special=sp.special ');
+FDQuery4.SQL.Add(' left join  ');
+FDQuery4.SQL.Add(' (select special,"25-35"as d,  count(t)as tt from (select k.special, year,count(year) as t From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and  ');
+FDQuery4.SQL.Add('  s.id=sr.stud_id group  by special,year HAVING year<=35 and 25<=year ) group by  special,d )sn on  kk.special=sn.special  ');
+FDQuery4.SQL.Add('left join  ');
+FDQuery4.SQL.Add(' (select special,">25 "as d, count(t)as tt from (select k.special, year,count(year) as t  From Stud_result sr, Kurs k, Students s ');
+FDQuery4.SQL.Add('  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING 25>year) group by  special,d)sg on  kk.special=sg.special ');
+FDQuery4.Active:=true;
+
+Grid_Width(Grid2);
 end;
 
 //-------------------------------------------------------
@@ -211,7 +291,7 @@ function TForm1.IdToKursName(id:string):string;
      FDQuery1.SQL.Clear;
      FDQuery1.Active:=false;
      FDQuery1.SQL.Add('select special from Kurs where id='+poo(id));
-     showmessage('select special from Kurs where id='+poo(id));
+    // showmessage('select special from Kurs where id='+poo(id));
      FDQuery1.Active:=true;
      FDQuery1.First;
      Result:=FDQuery1.Fields[0].Text;
@@ -243,13 +323,19 @@ if ADD_result=0 then exit;
 
  try
    local_Bd:='Stud_Result';
-   //---Удаляем результат из таблицы результатов, если он ранее был реализация обновления без использования update
+   s1:='Result_id';
+   if Result_CB.ItemIndex>-1 then
+   FdConnection1.ExecSQL('update '+local_Bd+' set Result_id='+poo((Result_CB.ItemIndex+1).ToString)+' where Stud_id='+FDQuery2.FieldByName('id').Text);
+
+  {
    if Result_CB.ItemIndex>-1 then
        FdConnection1.ExecSQL('delete from '+local_Bd+' where Stud_id='+FDQuery2.FieldByName('id').Text);
    //---
+
    s1:='Stud_id,Result_id';
    s2:=poo(FDQuery2.FieldByName('id').Text)+','+poo((Result_CB.ItemIndex+1).ToString);
    FdConnection1.ExecSQL('insert into '+local_Bd+' ('+s1+') VALUES('+s2+')');
+   }
    FDQuery2.Refresh;
   except
    Showmessage('Ошибка - результат курса уже вводился!');
@@ -274,19 +360,7 @@ end;
 
 procedure TForm1.Switch1Switch(Sender: TObject);
 begin
- if Switch1.IsChecked=true
- then
-  begin
-   FDQuery2.SQL.Text:='SELECT distinct s.id,s.fio,k.special,sr.Result,sr.Result_id  from Students s,Kurs k left join (SELECT st.Stud_id,r.Result,st.Result_id FROM Stud_Result st,Result r where st.result_id=r.id)sr on sr.Stud_id=s.id WHERE k.id=s.Kurs and sr.Result_id is null' ;
-   FDQuery2.Active:=true;
-   Grid_Width(Grid3);
-  end
- else
- begin
-  FDQuery2.SQL.Text:='SELECT distinct s.id,s.fio,k.special, sr.Result, sr.Result_id  from Students s,Kurs k left join ( SELECT st.Stud_id, r.Result, st.Result_id  FROM Stud_Result st, Result r where st.result_id=r.id) sr on sr.Stud_id=s.id WHERE k.id=s.Kurs  ' ;
-  FDQuery2.Active:=true;
-  Grid_Width(Grid3);
- end;
+ Refresh_Table('Result');
 
 end;
 
@@ -319,14 +393,13 @@ Begin
 
     except
     end;
-      if Local_BD='Students' then
+    if Local_BD='Students' then
        begin
         FdConnection1.Connected:=true;
          sSQL:='CREATE TABLE if not exists '+Local_BD+' ( '+
           'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
           'FIO CHAR(50),'+
-          'Kurs CHAR(15));';
-  //        'Result CHAR(20));';
+          'Year CHAR(15));';
         FdConnection1.ExecSQL(sSQL);
         FDQuery1.SQL.Clear;
         FDQuery1.SQL.Add('select * from '+Local_BD);
@@ -352,7 +425,7 @@ Begin
          sSQL:='CREATE TABLE if not exists '+Local_BD+' ( '+
           'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
           'Result CHAR(50),'+
-          'text CHAR(50));';
+          'Result_int integer);';
         FdConnection1.ExecSQL(sSQL);
         FDQuery1.SQL.Clear;
         FDQuery1.SQL.Add('select * from '+Local_BD);
@@ -363,9 +436,14 @@ Begin
        begin
         FdConnection1.Connected:=true;
          sSQL:='CREATE TABLE if not exists '+Local_BD+' ( '+
-          'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
+        //  'id INTEGER PRIMARY KEY AUTOINCREMENT,'+
           'Stud_id INTEGER UNIQUE,'+
-          'Result_id INTEGER);';
+          'kurs_id INTEGER,'+
+          'Result_id INTEGER  DEFAULT 1,'+
+          'FOREIGN KEY(Stud_id) REFERENCES Students(id),'+
+          'FOREIGN KEY(kurs_id) REFERENCES Kurs(id),'+
+          'FOREIGN KEY(Result_id) REFERENCES Result(id));';
+
         FdConnection1.ExecSQL(sSQL);
         FDQuery1.SQL.Clear;
         FDQuery1.SQL.Add('select * from '+Local_BD);
@@ -379,29 +457,19 @@ procedure TForm1.Grid1CellClick(const Column: TColumn; const Row: Integer);
 begin
   if ADD_stud=1 then exit;//Отключаем пока идет ввод данных
  Clear_forms;
- FIOtoThri(NameToId(fdtable1.FieldByName('id').Text));
- if fdtable1.FieldByName('kurs').Text.Length>0 then
-    Kurs_CB.ItemIndex:=StrToInt(fdtable1.FieldByName('kurs').Text)-1
+ FIOtoThri(NameToId(FDQuery3.FieldByName('id').Text));
+ if FDQuery3.FieldByName('kurs_id').Text.Length>0 then
+    Kurs_CB.ItemIndex:=StrToInt(FDQuery3.FieldByName('kurs_id').Text)-1
  else Kurs_CB.ItemIndex:=-1;
-
-{
- FIOtoThri(NameToId(fdtable1.FieldByName('id').Text));
-   if ADD_stud=1 then exit;//Отключаем пока идет ввод данных
- Clear_forms;
- FIOtoThri(NameToId(fdtable1.FieldByName('id').Text));
- if fdtable1.FieldByName('kurs').Text.Length>0 then
-    Kurs_CB.ItemIndex:=StrToInt(fdtable1.FieldByName('kurs').Text)-1
- else Kurs_CB.ItemIndex:=-1;
- }
 end;
 
 procedure TForm1.Grid1Click(Sender: TObject);
 begin
   if ADD_stud=1 then exit;//Отключаем пока идет ввод данных
  Clear_forms;
- FIOtoThri(NameToId(fdtable1.FieldByName('id').Text));
- if fdtable1.FieldByName('kurs').Text.Length>0 then
-    Kurs_CB.ItemIndex:=StrToInt(fdtable1.FieldByName('kurs').Text)-1
+ FIOtoThri(NameToId(FDQuery3.FieldByName('id').Text));
+ if FDQuery3.FieldByName('kurs_id').Text.Length>0 then
+    Kurs_CB.ItemIndex:=StrToInt(FDQuery3.FieldByName('kurs_id').Text)-1
  else Kurs_CB.ItemIndex:=-1;
 end;
 
@@ -438,8 +506,8 @@ end;
 
 procedure TForm1.Image11Click(Sender: TObject);
 var
-error,local_Bd, s1, s2:string;
-
+error,local_Bd, s1, s2,id:string;
+y:integer;
 begin
   if  ADD_stud=0
    then
@@ -453,19 +521,6 @@ begin
    end
   else
   begin
-  {
-  local_Bd:='Students';
-  s1:='FIO, Kurs';
-  s2:=poo('')+','+poo('');
-  FdConnection1.ExecSQL('insert into '+local_Bd+' ('+s1+') VALUES('+s2+')');
-  FDTable1.Refresh;
-  FDTable1.RecNo:=FDTable1.RecordCount;
-
-  FIOtoThri(NameToId(fdtable1.FieldByName('id').Text));
-  if fdtable1.FieldByName('kurs').Text.Length>0 then
-    Kurs_CB.ItemIndex:=StrToInt(fdtable1.FieldByName('kurs').Text)-1
-  else Kurs_CB.ItemIndex:=-1;
-   }
 
  error:='';
  error:=error+OnError(F_text)+' ';
@@ -480,17 +535,26 @@ begin
 
   Grid1.ReadOnly:=false;
   Grid1.Enabled:=true;
+  y:=Random(32)+18;
   local_Bd:='Students';
-  s1:='FIO, Kurs';
-  s2:=poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+','+poo((Kurs_CB.ItemIndex+1).ToString);
+  s1:='FIO,Year';
+  s2:=poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+','+poo(y.ToString);
   FdConnection1.ExecSQL('insert into '+local_Bd+' ('+s1+') VALUES('+s2+')');
   Refresh(Local_BD);
-  FDTable1.Refresh;
+
+  FDQuery1.Locate('fio',F_text.Text+' '+I_text.Text+' '+O_text.Text);
+  id:=FDQuery1.FieldByName('id').Text;
+
+  s2:=poo(id)+','+poo((Kurs_CB.ItemIndex+1).ToString);
+  FdConnection1.ExecSQL('insert into Stud_Result (Stud_id,kurs_id) VALUES('+s2+')');
+
+
+  Refresh(Local_BD);
+  FDQuery3.Refresh;
   Showmessage('Запись добавлена');
   ADD_stud:=0;
 
   end;
- // FDTable1.in
 
 end;
 
@@ -514,11 +578,14 @@ begin
   end;
 
   local_Bd:='Students';
-  s1:='FIO, Kurs';
+  s1:='FIO';
   s2:=poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+','+poo((Kurs_CB.ItemIndex+1).ToString);
-  FdConnection1.ExecSQL('update '+local_Bd+' set Fio='+poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+',Kurs='+poo((Kurs_CB.ItemIndex+1).ToString)+' where id='+poo(fdtable1.FieldByName('id').Text));
+  FdConnection1.ExecSQL('update '+local_Bd+' set Fio='+poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+' where id='+poo(FDQuery3.FieldByName('id').Text));
+  FdConnection1.ExecSQL('update Stud_Result set kurs_id='+poo((Kurs_CB.ItemIndex+1).ToString)+' where Stud_id='+poo(FDQuery3.FieldByName('id').Text));
+//  ,Kurs='+poo((Kurs_CB.ItemIndex+1).ToString)+'
+//   FdConnection1.ExecSQL('update '+local_Bd+'
   Refresh(Local_BD);
-  FDTable1.Refresh;
+  FDQuery3.Refresh;
 end;
 
 procedure TForm1.Image1Click(Sender: TObject);
@@ -527,25 +594,7 @@ error,local_Bd, s1, s2:string;
 begin
 
 Update_Students;
-{
- error:='';
- error:=error+OnError(F_text)+' ';
- error:=error+OnError(I_text)+' ';
- error:=error+OnError(O_text)+' ';
- if  Kurs_CB.ItemIndex=-1 then  error:=error+'Курс';
- if error.Length>3 then
-  begin
-    showmessage('Не заполнены следующие поля: '+error);
-    exit;
-  end;
 
-  local_Bd:='Students';
-  s1:='FIO, Kurs';
-  s2:=poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+','+poo((Kurs_CB.ItemIndex+1).ToString);
-  FdConnection1.ExecSQL('update '+local_Bd+' set Fio='+poo(F_text.Text+' '+I_text.Text+' '+O_text.Text)+',Kurs='+poo((Kurs_CB.ItemIndex+1).ToString)+' where id='+poo(fdtable1.FieldByName('id').Text));
-  Refresh(Local_BD);
-  FDTable1.Refresh;
-   }
 end;
 
 procedure TForm1.Image2Click(Sender: TObject);
@@ -554,9 +603,10 @@ error,local_Bd, s1, s2:string;
 begin
  if ADD_stud=1 then exit;//Отключаем пока идет ввод данных
   local_Bd:='Students';
-  FdConnection1.ExecSQL('delete from '+local_Bd+' where id='+poo(fdtable1.FieldByName('id').Text));
+  FdConnection1.ExecSQL('delete from  Stud_Result where Stud_id='+poo(FDQuery3.FieldByName('id').Text));
+  FdConnection1.ExecSQL('delete from '+local_Bd+' where id='+poo(FDQuery3.FieldByName('id').Text));
   Refresh(Local_BD);
-  FDTable1.Refresh;
+  FDQuery3.Refresh;
   Showmessage('Запись удалена!');
 
 end;
@@ -613,7 +663,8 @@ begin
  ADD_stud:=0;
  ADD_result:=0;
  try
-   Refresh_Table('All');
+    FDConnection1.Params.Values['Database'] :='BD1';
+    Refresh_Table('All');
  except
    Showmessage('Ошибка при загрузке данных, пересоздаем БД');
     // Создаем БД
@@ -622,11 +673,14 @@ begin
    CreateLocalBD('Result',true);
    CreateLocalBD('Stud_Result',true);
 
-   Add_New('Students','FIO',10,Random_Students);
+   Add_New('Students','FIO',120,Random_Students);
    Add_New('Kurs','special',10,Random_kurs);
    RefreshCB(Kurs_CB,'Kurs','special');
-   Add_New('Result','Result',4,Add_Kurs_Result);
+   Add_New('Result','Result',6,Add_Kurs_Result);
    RefreshCB(Result_CB,'Result','Result');
+   FdConnection1.ExecSQL('update Result set Result_int=id-1');
+
+   Add_New_Students2;
 
    Refresh_Table('All');
 
@@ -649,17 +703,31 @@ Begin
   Begin
    G.Columns[0].Width:=25;
    G.Columns[1].Width:=250;
-   G.Columns[2].Width:=25;
+   G.Columns[2].Width:=250;
+   G.Columns[3].Width:=30;
+   G.Columns[4].Visible:=false;
   End;
 
   If G.Name='Grid3' then
   Begin
    G.Columns[0].Width:=25;
    G.Columns[1].Width:=250;
-   G.Columns[2].Width:=150;
-   G.Columns[3].Width:=150;
-   G.Columns[4].Width:=0; //Скрываем поле с Id результатом
+   G.Columns[2].Width:=250;
+   G.Columns[3].Width:=250;
+   G.Columns[4].Visible:=false; //Скрываем поле с Id результатом
   End;
+
+  If G.Name='Grid2' then
+    Begin
+   G.Columns[0].Width:=250;
+   G.Columns[1].Width:=40;
+   G.Columns[2].Width:=40;
+   G.Columns[3].Width:=40;
+ //  G.Columns[4].Visible:=false;
+  End;
+
+
+
 End;
 
 
@@ -697,15 +765,41 @@ begin
 end;
 
 
+Function TForm1.Add_New_Students2():boolean;
+var
+s1,s2,local_Bd,id:string;
+i,int,y:integer;
+begin
+   Refresh('Students');
+   FDQuery1.First;
+   local_Bd:='Stud_Result';
+   s1:='Stud_id,kurs_id';
+   While not(FDQuery1.Eof) do
+    begin
+     randomize();
+     int:=1+Random(9);
+     y:=Random(32)+18;
+     id:=FDQuery1.FieldByName('id').Text;
+     s2:=id+','+int.ToString;
+     try
+      FdConnection1.ExecSQL('insert into '+local_Bd+' ('+s1+') VALUES('+s2+')');
+     except;
+      Showmessage('insert into '+local_Bd+' ('+s1+') VALUES('+s2+')')
+     end;
+     FdConnection1.ExecSQL('Update Students set Year='+poo(inttostr(y))+' where id='+poo(id));
+     FDQuery1.Next;
+    end;
+
+
+end;
 
 
 procedure TForm1.Button2Click(Sender: TObject);
-var
-s1,s2,local_Bd:string;
-i:integer;
+
 begin
  Add_New('Students','FIO',10,Random_Students);
 
+ Add_New_Students2;
 
 end;
 
@@ -731,9 +825,10 @@ begin
 
 if (Table='Students')or(Table='All')  then
  Begin
-  FDTable1.Active:=false;
-  FDTable1.TableName:='Students';
-  FDTable1.Active:=true;
+  FDQuery3.Active:=false;
+  FDQuery3.SQL.Text:='SELECT distinct s.id, s.FIO,k.special, s.year, sr.kurs_id  from  students s, kurs k, stud_result sr where sr.stud_id=s.id and sr.kurs_id=k.id';
+  FDQuery3.Active:=true;
+
   // Обновляем значения в комбо боксе
   RefreshCB(Kurs_CB,'Kurs','special');
   //Выставляем ширину полей грида
@@ -746,13 +841,13 @@ if (Table='Result')or(Table='All')  then
    if Switch1.IsChecked=true
  then
   begin
-   FDQuery2.SQL.Text:='SELECT distinct s.id,s.fio,k.special,sr.Result,sr.Result_id  from Students s,Kurs k left join (SELECT st.Stud_id,r.Result,st.Result_id FROM Stud_Result st,Result r where st.result_id=r.id)sr on sr.Stud_id=s.id WHERE k.id=s.Kurs and sr.Result_id is null' ;
+   FDQuery2.SQL.Text:='SELECT distinct s.id, s.fio,k.special,r.result,sr.result_id from Stud_Result sr, Students s, Kurs k left join result r on r.id=sr.Result_id WHERE sr.Stud_id=s.id AND sr.kurs_id=k.id and sr.result_id=1  ' ;
    FDQuery2.Active:=true;
    Grid_Width(Grid3);
   end
  else
  begin
-  FDQuery2.SQL.Text:='SELECT distinct s.id,s.fio,k.special, sr.Result, sr.Result_id  from Students s,Kurs k left join ( SELECT st.Stud_id, r.Result, st.Result_id  FROM Stud_Result st, Result r where st.result_id=r.id) sr on sr.Stud_id=s.id WHERE k.id=s.Kurs  ' ;
+  FDQuery2.SQL.Text:='SELECT distinct s.id, s.fio,k.special,r.result,sr.result_id  from Stud_Result sr, Students s, Kurs k left join result r on r.id=sr.Result_id WHERE sr.Stud_id=s.id AND sr.kurs_id=k.id and sr.result_id>0';
   FDQuery2.Active:=true;
   Grid_Width(Grid3);
  end;
@@ -771,8 +866,8 @@ end;
 procedure TForm1.Button3Click(Sender: TObject);
 
 begin
-
- Refresh_Table('All');
+ Add_New_Students2;
+// Refresh_Table('All');
 
 
 end;

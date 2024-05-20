@@ -1,22 +1,24 @@
 ﻿[FDTable1]
-Coordinates=670,160,60,33
+Coordinates=832,180,60,33
 Visible=True
 
 [Grid1]
-Coordinates=300,100,41,51
+Coordinates=730,260,41,51
+Visible=True
 
 [FDQuery1]
-Coordinates=386,40,63,33
+Coordinates=469,50,63,33
 Visible=True
 
 [FDConnection1]
 Coordinates=182,1,90,33
 
 []
-Coordinates=282,1,53,51
+Coordinates=578,310,53,51
+Visible=False
 
 [BindSourceDB1]
-Coordinates=313,30,92,69
+Coordinates=386,40,92,69
 
 [BindingsList1]
 Coordinates=128,87,82,33
@@ -61,7 +63,7 @@ Coordinates=384,78,53,33
 Coordinates=384,1,55,51
 
 [BindSourceDB2]
-Coordinates=600,150,92,69
+Coordinates=751,170,92,69
 
 [Label1]
 Coordinates=192,281,46,51
@@ -85,20 +87,16 @@ Coordinates=64,281,53,33
 Coordinates=424,133,53,33
 Visible=True
 
-[FDTable2]
-Coordinates=424,188,60,33
-Visible=False
-
 [FDQuery2]
 Coordinates=424,265,63,33
 Visible=False
 
 [Grid3]
-Coordinates=520,270,41,51
+Coordinates=590,170,41,51
 Visible=True
 
 [BindSourceDB3]
-Coordinates=424,188,92,69
+Coordinates=424,188,92,51
 
 [PopupColumn2]
 Coordinates=800,200,103,36
@@ -129,4 +127,73 @@ Coordinates=443,353,54,51
 
 [Label3]
 Coordinates=218,370,46,51
+
+[Label12]
+Coordinates=638,78,52,51
+
+[Image3]
+Coordinates=208,377,49,51
+
+[Random_kurs]
+Coordinates=457,1,83,51
+
+[Label10]
+Coordinates=70,377,52,51
+
+[Button2]
+Coordinates=0,0,53,51
+
+[TabItem1]
+Coordinates=638,326,59,33
+
+[Label9]
+Coordinates=11,377,46,51
+
+[Button3]
+Coordinates=282,177,53,51
+
+[Button1]
+Coordinates=638,249,53,51
+
+[Random_Students]
+Coordinates=687,1,105,51
+
+[Button5]
+Coordinates=64,270,53,51
+
+[Add_Kurs_Result]
+Coordinates=486,78,100,51
+
+[Button4]
+Coordinates=78,1,53,51
+
+[Label11]
+Coordinates=59,77,52,51
+
+[Button6]
+Coordinates=139,377,53,51
+
+[FDQuery3]
+Coordinates=800,290,63,33
+Visible=True
+
+[BindSourceDB5]
+Coordinates=883,290,92,69
+
+[Layout4]
+Coordinates=310,141,53,33
+
+[TabItem2]
+Coordinates=578,380,59,33
+
+[Grid2]
+Coordinates=850,80,41,51
+Visible=True
+
+[FDQuery4]
+Coordinates=920,80,63,33
+Visible=True
+
+[BindSourceDB6]
+Coordinates=993,80,92,69
 
