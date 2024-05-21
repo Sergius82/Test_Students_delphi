@@ -85,6 +85,7 @@ type
     BindSourceDB6: TBindSourceDB;
     LinkGridToDataSourceBindSourceDB6: TLinkGridToDataSource;
     Button7: TButton;
+    Memo1: TMemo;
     Function CreateLocalBD(Local_BD:string;clear:boolean):boolean;
     Function poo(s:string):string;
     function Refresh(Local_BD:string):boolean;
@@ -211,6 +212,7 @@ begin
       Begin
        FDQuery1.Edit;
        FDQuery1.FieldByName('Result_id').Text:=IntToStr(2+Random(4));
+       FDQuery1.FieldByName('Date_create').Text:=DateToSTR(now);
        FDQuery1.Next;
       End;
     // FDQuery1.CommitUpdates;
@@ -218,17 +220,8 @@ begin
 
 FDQuery4.SQL.Clear;
 FDQuery4.Active:=false;
-FDQuery4.SQL.Add('');
-FDQuery4.SQL.Add(' select kk.special,sp.tt as ">35", sn.tt as"25-35", sg.tt as ">25 " FROM Kurs kk ');
-FDQuery4.SQL.Add(' left join ');
-FDQuery4.SQL.Add('(select special,">35" as d, count(t)as tt from (select k.special, year,count(year) as t ');
-FDQuery4.SQL.Add(' From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING year>35)  group by special,d) sp on  kk.special=sp.special ');
-FDQuery4.SQL.Add(' left join  ');
-FDQuery4.SQL.Add(' (select special,"25-35"as d,  count(t)as tt from (select k.special, year,count(year) as t From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and  ');
-FDQuery4.SQL.Add('  s.id=sr.stud_id group  by special,year HAVING year<=35 and 25<=year ) group by  special,d )sn on  kk.special=sn.special  ');
-FDQuery4.SQL.Add('left join  ');
-FDQuery4.SQL.Add(' (select special,">25 "as d, count(t)as tt from (select k.special, year,count(year) as t  From Stud_result sr, Kurs k, Students s ');
-FDQuery4.SQL.Add('  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING 25>year) group by  special,d)sg on  kk.special=sg.special ');
+FDQuery4.SQL.Add(memo1.Lines.Text)  ;
+
 FDQuery4.Active:=true;
 
 Grid_Width(Grid2);
@@ -240,17 +233,7 @@ procedure TForm1.Button8Click(Sender: TObject);
 begin
 FDQuery4.SQL.Clear;
 FDQuery4.Active:=false;
-FDQuery4.SQL.Add('');
-FDQuery4.SQL.Add(' select kk.special,sp.tt as ">35", sn.tt as"25-35", sg.tt as ">25 " FROM Kurs kk ');
-FDQuery4.SQL.Add(' left join ');
-FDQuery4.SQL.Add('(select special,">35" as d, count(t)as tt from (select k.special, year,count(year) as t ');
-FDQuery4.SQL.Add(' From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING year>35)  group by special,d) sp on  kk.special=sp.special ');
-FDQuery4.SQL.Add(' left join  ');
-FDQuery4.SQL.Add(' (select special,"25-35"as d,  count(t)as tt from (select k.special, year,count(year) as t From Stud_result sr, Kurs k, Students s  where sr.kurs_id=k.id and  ');
-FDQuery4.SQL.Add('  s.id=sr.stud_id group  by special,year HAVING year<=35 and 25<=year ) group by  special,d )sn on  kk.special=sn.special  ');
-FDQuery4.SQL.Add('left join  ');
-FDQuery4.SQL.Add(' (select special,">25 "as d, count(t)as tt from (select k.special, year,count(year) as t  From Stud_result sr, Kurs k, Students s ');
-FDQuery4.SQL.Add('  where sr.kurs_id=k.id and s.id=sr.stud_id group  by special,year HAVING 25>year) group by  special,d)sg on  kk.special=sg.special ');
+FDQuery4.SQL.Add(memo1.Lines.Text)  ;
 FDQuery4.Active:=true;
 
 Grid_Width(Grid2);
@@ -440,6 +423,7 @@ Begin
           'Stud_id INTEGER UNIQUE,'+
           'kurs_id INTEGER,'+
           'Result_id INTEGER  DEFAULT 1,'+
+          'Date_create Char(50),'+
           'FOREIGN KEY(Stud_id) REFERENCES Students(id),'+
           'FOREIGN KEY(kurs_id) REFERENCES Kurs(id),'+
           'FOREIGN KEY(Result_id) REFERENCES Result(id));';
@@ -698,6 +682,8 @@ end;
 
 // Выставляем ширину столбцов в гридах
 Function TForm1.Grid_Width(G:TGrid):boolean;
+var
+i:integer;
 Begin
   If G.Name='Grid1' then
   Begin
@@ -720,9 +706,10 @@ Begin
   If G.Name='Grid2' then
     Begin
    G.Columns[0].Width:=250;
-   G.Columns[1].Width:=40;
-   G.Columns[2].Width:=40;
-   G.Columns[3].Width:=40;
+   for i := 1 to 8 do  G.Columns[i].Width:=130;
+
+
+
  //  G.Columns[4].Visible:=false;
   End;
 
@@ -777,7 +764,7 @@ begin
    While not(FDQuery1.Eof) do
     begin
      randomize();
-     int:=1+Random(9);
+     int:=1+Random(10);
      y:=Random(32)+18;
      id:=FDQuery1.FieldByName('id').Text;
      s2:=id+','+int.ToString;
